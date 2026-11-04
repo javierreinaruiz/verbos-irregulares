@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verbos Irregulares Master</title>
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-dark: #4338CA;
+      --secondary: #10B981;
+      --bg: #F3F4F6;
+      --card: #FFFFFF;
+      --text: #1F2937;
+      --text-light: #6B7280;
+      --danger: #EF4444;
+      --gold: #F59E0B;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      max-width: 500px;
+      margin: 0 auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 16px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .stats-bar {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 8px;
+      margin-top: 8px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    main {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      padding-bottom: 70px;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 500px;
+      background-color: var(--card);
+      display: flex;
+      border-top: 1px solid #E5E7EB;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-btn.active {
+      color: var(--primary);
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .quiz-card {
+      text-align: center;
+      padding: 24px 16px;
+    }
+
+    .quiz-prompt {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+
+    .verb-target {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #E0E7FF;
+      color: var(--primary-dark);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-submit {
+      background: var(--primary);
+      color: white;
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .btn.correct {
+      background: var(--secondary) !important;
+      color: white !important;
+    }
+
+    .btn.incorrect {
+      background: var(--danger) !important;
+      color: white !important;
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #E5E7EB;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      outline: none;
+    }
+
+    .text-input:focus {
+      border-color: var(--primary);
+    }
+
+    .verb-list {
+      list-style: none;
+    }
+
+    .verb-item {
+      background: var(--card);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .verb-item .forms {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .verb-item .meaning {
+      color: var(--text-light);
+      font-size: 0.85rem;
+    }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      text-align: center;
+    }
+
+    .badge-item {
+      background: var(--card);
+      padding: 12px;
+      border-radius: 8px;
+      opacity: 0.4;
+      transition: opacity 0.3s;
+    }
+
+    .badge-item.unlocked {
+      opacity: 1;
+    }
+
+    .badge-icon {
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    .badge-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Irregular Verbs Master</h1>
+    <div class="stats-bar">
+      <span>🔥 Racha: <b id="streak-count">0</b> d</span>
+      <span>⭐ Puntos: <b id="score-count">0</b></span>
+      <span>📚 Aprendidos: <b id="learned-count">0</b>/175</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- TAB QUIZ -->
+    <section id="tab-quiz" class="tab-content active">
+      <div class="card quiz-card">
+        <div id="quiz-container">
+          <div class="quiz-prompt" id="quiz-prompt">Traducción o Pista</div>
+          <div class="verb-target" id="verb-target">Infinitive</div>
+
+          <div id="quiz-options-container">
+            <!-- Render dinámico: Opción Múltiple o Escritura -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB LISTA DE VERBOS -->
+    <section id="tab-verbs" class="tab-content">
+      <input type="text" id="search-input" class="search-box" placeholder="Buscar verbo en inglés o español..." oninput="renderVerbsList()">
+      <ul class="verb-list" id="verb-list">
+        <!-- Render dinámico de verbos -->
+      </ul>
+    </section>
+
+    <!-- TAB LOGROS -->
+    <section id="tab-badges" class="tab-content">
+      <div class="card">
+        <h2 style="font-size: 1rem; margin-bottom: 12px;">Tus Logros</h2>
+        <div class="badge-grid" id="badge-grid">
+          <!-- Render dinámico de logros -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav>
+    <button class="nav-btn active" onclick="switchTab('quiz', this)">
+      <span>🎮</span> Práctica
+    </button>
+    <button class="nav-btn" onclick="switchTab('verbs', this)">
+      <span>📖</span> Verbos
+    </button>
+    <button class="nav-btn" onclick="switchTab('badges', this)">
+      <span>🏆</span> Logros
+    </button>
+  </nav>
+
+  <script>
+    // Lista completa de 175 verbos irregulares
+    const verbsData = [
+      { inf: "abide", past: "abode", part: "abode", esp: "habitar / acatar" },
+      { inf: "arise", past: "arose", part: "arisen", esp: "surgir / levantarse" },
+      { inf: "awake", past: "awoke", part: "awoken", esp: "despertar" },
+      { inf: "be", past: "was/were", part: "been", esp: "ser / estar" },
+      { inf: "bear", past: "bore", part: "borne", esp: "soportar / dar a luz" },
+      { inf: "beat", past: "beat", part: "beaten", esp: "golpear / vencer" },
+      { inf: "become", past: "became", part: "become", esp: "llegar a ser / convertirse" },
+      { inf: "befall", past: "befell", part: "befallen", esp: "ocurrir / suceder" },
+      { inf: "begin", past: "began", part: "begun", esp: "empezar / comenzar" },
+      { inf: "behold", past: "beheld", part: "beheld", esp: "observar / contemplar" },
+      { inf: "bend", past: "bent", part: "bent", esp: "doblar / inclinar" },
+      { inf: "bereave", past: "bereft", part: "bereft", esp: "despojar / privar" },
+      { inf: "beseech", past: "besought", part: "besought", esp: "suplicar / rogar" },
+      { inf: "bet", past: "bet", part: "bet", esp: "apostar" },
+      { inf: "bid", past: "bid", part: "bid", esp: "pujar / ofrecer" },
+      { inf: "bind", past: "bound", part: "bound", esp: "atar / unir" },
+      { inf: "bite", past: "bit", part: "bitten", esp: "morder" },
+      { inf: "bleed", past: "bled", part: "bled", esp: "sangrar" },
+      { inf: "blow", past: "blew", part: "blown", esp: "soplar" },
+      { inf: "break", past: "broke", part: "broken", esp: "romper" },
+      { inf: "breed", past: "bred", part: "bred", esp: "criar / reproducir" },
+      { inf: "bring", past: "brought", part: "brought", esp: "traer / llevar" },
+      { inf: "broadcast", past: "broadcast", part: "broadcast", esp: "transmitir / emitir" },
+      { inf: "build", past: "built", part: "built", esp: "construir" },
+      { inf: "burn", past: "burnt", part: "burnt", esp: "quemar" },
+      { inf: "burst", past: "burst", part: "burst", esp: "estallar / reventar" },
+      { inf: "buy", past: "bought", part: "bought", esp: "comprar" },
+      { inf: "cast", past: "cast", part: "cast", esp: "lanzar / moldear" },
+      { inf: "catch", past: "caught", part: "caught", esp: "atrapar / coger" },
+      { inf: "choose", past: "chose", part: "chosen", esp: "elegir / escoger" },
+      { inf: "cleave", past: "clove", part: "cloven", esp: "hender / partir" },
+      { inf: "cling", past: "clung", part: "clung", esp: "aferrarse / adherirse" },
+      { inf: "come", past: "came", part: "come", esp: "venir" },
+      { inf: "cost", past: "cost", part: "cost", esp: "costar" },
+      { inf: "creep", past: "crept", part: "crept", esp: "arrastrarse / gatear" },
+      { inf: "cut", past: "cut", part: "cut", esp: "cortar" },
+      { inf: "deal", past: "dealt", part: "dealt", esp: "tratar / repartir" },
+      { inf: "dig", past: "dug", part: "dug", esp: "cavar" },
+      { inf: "do", past: "did", part: "done", esp: "hacer" },
+      { inf: "draw", past: "drew", part: "drawn", esp: "dibujar / extraer" },
+      { inf: "dream", past: "dreamt", part: "dreamt", esp: "soñar" },
+      { inf: "drink", past: "drank", part: "drunk", esp: "beber" },
+      { inf: "drive", past: "drove", part: "driven", esp: "conducir / manejar" },
+      { inf: "dwell", past: "dwelt", part: "dwelt", esp: "habitar / residir" },
+      { inf: "eat", past: "ate", part: "eaten", esp: "comer" },
+      { inf: "fall", past: "fell", part: "fallen", esp: "caer" },
+      { inf: "feed", past: "fed", part: "fed", esp: "alimentar" },
+      { inf: "feel", past: "felt", part: "felt", esp: "sentir" },
+      { inf: "fight", past: "fought", part: "fought", esp: "pelear / luchar" },
+      { inf: "find", past: "found", part: "found", esp: "encontrar" },
+      { inf: "flee", past: "fled", part: "fled", esp: "huir / escapar" },
+      { inf: "fling", past: "flung", part: "flung", esp: "arrojar / lanzar" },
+      { inf: "fly", past: "flew", part: "flown", esp: "volar" },
+      { inf: "forbid", past: "forbade", part: "forbidden", esp: "prohibir" },
+      { inf: "forecast", past: "forecast", part: "forecast", esp: "pronosticar / predecir" },
+      { inf: "forget", past: "forgot", part: "forgotten", esp: "olvidar" },
+      { inf: "forgive", past: "forgave", part: "forgiven", esp: "perdonar" },
+      { inf: "forsake", past: "forsook", part: "forsaken", esp: "abandonar" },
+      { inf: "freeze", past: "froze", part: "frozen", esp: "congelar" },
+      { inf: "get", past: "got", part: "gotten", esp: "obtener / conseguir" },
+      { inf: "give", past: "gave", part: "given", esp: "dar" },
+      { inf: "go", past: "went", part: "gone", esp: "ir" },
+      { inf: "grind", past: "ground", part: "ground", esp: "moler" },
+      { inf: "grow", past: "grew", part: "grown", esp: "crecer / cultivar" },
+      { inf: "hang", past: "hung", part: "hung", esp: "colgar" },
+      { inf: "have", past: "had", part: "had", esp: "tener / haber" },
+      { inf: "hear", past: "heard", part: "heard", esp: "oír / escuchar" },
+      { inf: "hide", past: "hid", part: "hidden", esp: "esconder / ocultar" },
+      { inf: "hit", past: "hit", part: "hit", esp: "golpear" },
+      { inf: "hold", past: "held", part: "held", esp: "sostener / mantener" },
+      { inf: "hurt", past: "hurt", part: "hurt", esp: "doler / lastimar" },
+      { inf: "keep", past: "kept", part: "kept", esp: "guardar / mantener" },
+      { inf: "kneel", past: "knelt", part: "knelt", esp: "arrodillarse" },
+      { inf: "know", past: "knew", part: "known", esp: "saber / conocer" },
+      { inf: "lay", past: "laid", part: "laid", esp: "colocar / poner" },
+      { inf: "lead", past: "led", part: "led", esp: "guiar / liderar" },
+      { inf: "lean", past: "leant", part: "leant", esp: "apoyarse / inclinarse" },
+      { inf: "leap", past: "leapt", part: "leapt", esp: "brincar / saltar" },
+      { inf: "learn", past: "learnt", part: "learnt", esp: "aprender" },
+      { inf: "leave", past: "left", part: "left", esp: "dejar / salir" },
+      { inf: "lend", past: "lent", part: "lent", esp: "prestar" },
+      { inf: "let", past: "let", part: "let", esp: "permitir / dejar" },
+      { inf: "lie", past: "lay", part: "lain", esp: "yacer / tumbarse" },
+      { inf: "light", past: "lit", part: "lit", esp: "encender / iluminar" },
+      { inf: "lose", past: "lost", part: "lost", esp: "perder" },
+      { inf: "make", past: "made", part: "made", esp: "hacer / fabricar" },
+      { inf: "mean", past: "meant", part: "meant", esp: "significar / querer decir" },
+      { inf: "meet", past: "met", part: "met", esp: "conocer / encontrarse" },
+      { inf: "mislay", past: "mislaid", part: "mislaid", esp: "extraviar" },
+      { inf: "mislead", past: "misled", part: "misled", esp: "engañar / despistar" },
+      { inf: "mistake", past: "mistook", part: "mistaken", esp: "equivocar" },
+      { inf: "mow", past: "mowed", part: "mown", esp: "cortar el césped" },
+      { inf: "overcome", past: "overcame", part: "overcome", esp: "superar / vencer" },
+      { inf: "overdo", past: "overdid", part: "overdone", esp: "exagerar / rehacer" },
+      { inf: "overtake", past: "overtook", part: "overtaken", esp: "sobrepasar / adelantar" },
+      { inf: "pay", past: "paid", part: "paid", esp: "pagar" },
+      { inf: "plead", past: "pled", part: "pled", esp: "alegar / suplicar" },
+      { inf: "preset", past: "preset", part: "preset", esp: "programar / reajustar" },
+      { inf: "prove", past: "proved", part: "proven", esp: "demostrar / probar" },
+      { inf: "put", past: "put", part: "put", esp: "poner / colocar" },
+      { inf: "quit", past: "quit", part: "quit", esp: "renunciar / abandonar" },
+      { inf: "read", past: "read", part: "read", esp: "leer" },
+      { inf: "rid", past: "rid", part: "rid", esp: "librar / zafar" },
+      { inf: "ride", past: "rode", part: "ridden", esp: "montar / andar" },
+      { inf: "ring", past: "rang", part: "rung", esp: "sonar / llamar" },
+      { inf: "rise", past: "rose", part: "risen", esp: "subir / elevarse" },
+      { inf: "run", past: "ran", part: "run", esp: "correr" },
+      { inf: "saw", past: "sawed", part: "sawn", esp: "serrar" },
+      { inf: "say", past: "said", part: "said", esp: "decir" },
+      { inf: "see", past: "saw", part: "seen", esp: "ver" },
+      { inf: "seek", past: "sought", part: "sought", esp: "buscar" },
+      { inf: "sell", past: "sold", part: "sold", esp: "vender" },
+      { inf: "send", past: "sent", part: "sent", esp: "enviar" },
+      { inf: "set", past: "set", part: "set", esp: "establecer / poner" },
+      { inf: "sew", past: "sewed", part: "sewn", esp: "coser" },
+      { inf: "shake", past: "shook", part: "shaken", esp: "sacudir / agitar" },
+      { inf: "shear", past: "sheared", part: "shorn", esp: "esquilar" },
+      { inf: "shed", past: "shed", part: "shed", esp: "derramar / desprender" },
+      { inf: "shine", past: "shone", part: "shone", esp: "brillar" },
+      { inf: "shoot", past: "shot", part: "shot", esp: "disparar" },
+      { inf: "show", past: "showed", part: "shown", esp: "mostrar" },
+      { inf: "shrink", past: "shrank", part: "shrunk", esp: "encoger" },
+      { inf: "shut", past: "shut", part: "shut", esp: "cerrar" },
+      { inf: "sing", past: "sang", part: "sung", esp: "cantar" },
+      { inf: "sink", past: "sank", part: "sunk", esp: "hundir" },
+      { inf: "sit", past: "sat", part: "sat", esp: "sentarse" },
+      { inf: "slay", past: "slew", part: "slain", esp: "asesinar / matar" },
+      { inf: "sleep", past: "slept", part: "slept", esp: "dormir" },
+      { inf: "slide", past: "slid", part: "slid", esp: "deslizar" },
+      { inf: "sling", past: "slung", part: "slung", esp: "lanzar / colgar" },
+      { inf: "slink", past: "slunk", part: "slunk", esp: "escabullirse" },
+      { inf: "slit", past: "slit", part: "slit", esp: "rajar / cortar" },
+      { inf: "smell", past: "smelt", part: "smelt", esp: "oler" },
+      { inf: "smite", past: "smote", part: "smitten", esp: "golpear / afligir" },
+      { inf: "sow", past: "sowed", part: "sown", esp: "sembrar" },
+      { inf: "speak", past: "spoke", part: "spoken", esp: "hablar" },
+      { inf: "speed", past: "sped", part: "sped", esp: "acelerar" },
+      { inf: "spell", past: "spelt", part: "spelt", esp: "deletrear" },
+      { inf: "spend", past: "spent", part: "spent", esp: "gastar / pasar tiempo" },
+      { inf: "spill", past: "spilt", part: "spilt", esp: "derramar" },
+      { inf: "spin", past: "spun", part: "spun", esp: "girar / hilar" },
+      { inf: "spit", past: "spat", part: "spat", esp: "escupir" },
+      { inf: "split", past: "split", part: "split", esp: "dividir / partir" },
+      { inf: "spoil", past: "spoilt", part: "spoilt", esp: "estropear / arruinar" },
+      { inf: "spread", past: "spread", part: "spread", esp: "extender / esparcir" },
+      { inf: "spring", past: "sprang", part: "sprung", esp: "brotar / saltar" },
+      { inf: "stand", past: "stood", part: "stood", esp: "estar de pie" },
+      { inf: "steal", past: "stole", part: "stolen", esp: "robar" },
+      { inf: "stick", past: "stuck", part: "stuck", esp: "pegar / adhiere" },
+      { inf: "sting", past: "stung", part: "stung", esp: "picar / picadura" },
+      { inf: "stink", past: "stank", part: "stunk", esp: "apestar" },
+      { inf: "stride", past: "strode", part: "stridden", esp: "dar zancadas" },
+      { inf: "strike", past: "struck", part: "struck", esp: "golpear / chocar" },
+      { inf: "string", past: "strung", part: "strung", esp: "encordar / atar" },
+      { inf: "strive", past: "strove", part: "striven", esp: "esforzarse" },
+      { inf: "swear", past: "swore", part: "sworn", esp: "jurar / maldecir" },
+      { inf: "sweep", past: "swept", part: "swept", esp: "barrer" },
+      { inf: "swell", past: "swelled", part: "swollen", esp: "hincharse" },
+      { inf: "swim", past: "swam", part: "swum", esp: "nadar" },
+      { inf: "swing", past: "swung", part: "swung", esp: "balancearse" },
+      { inf: "take", past: "took", part: "taken", esp: "tomar / llevar" },
+      { inf: "teach", past: "taught", part: "taught", esp: "enseñar" },
+      { inf: "tear", past: "tore", part: "torn", esp: "rasgar / romper" },
+      { inf: "tell", past: "told", part: "told", esp: "decir / contar" },
+      { inf: "think", past: "thought", part: "thought", esp: "pensar" },
+      { inf: "thrive", past: "throve", part: "thriven", esp: "prosperar" },
+      { inf: "throw", past: "threw", part: "thrown", esp: "lanzar / tirar" },
+      { inf: "thrust", past: "thrust", part: "thrust", esp: "empujar con fuerza" },
+      { inf: "tread", past: "trod", part: "trodden", esp: "pisar / pisotear" },
+      { inf: "undergo", past: "underwent", part: "undergone", esp: "someterse a / sufrir" },
+      { inf: "understand", past: "understood", part: "understood", esp: "entender" },
+      { inf: "undertake", past: "undertook", part: "undertaken", esp: "emprender" },
+      { inf: "upset", past: "upset", part: "upset", esp: "molesarse / alterar" },
+      { inf: "wake", past: "woke", part: "woken", esp: "despertarse" },
+      { inf: "wear", past: "wore", part: "worn", esp: "vestir / usar ropa" },
+      { inf: "weave", past: "wove", part: "woven", esp: "tejer" },
+      { inf: "weep", past: "wept", part: "wept", esp: "llorar" },
+      { inf: "win", past: "won", part: "won", esp: "ganar" },
+      { inf: "wind", past: "wound", part: "wound", esp: "enrollar / dar cuerda" },
+      { inf: "withdraw", past: "withdrew", part: "withdrawn", esp: "retirar / extraer" },
+      { inf: "withhold", past: "withheld", part: "withheld", esp: "retener / ocultar" },
+      { inf: "withstand", past: "withstood", part: "withstood", esp: "resistir / aguantar" },
+      { inf: "wring", past: "wrung", part: "wrung", esp: "exprimidor / retorcer" },
+      { inf: "write", past: "wrote", part: "written", esp: "escribir" }
+    ];
+
+    const badges = [
+      { id: 'first_step', name: 'Primer Paso', icon: '🌱', req: 10 },
+      { id: 'master_50', name: 'Luchador', icon: '⚔️', req: 50 },
+      { id: 'master_100', name: 'Experto', icon: '🔮', req: 100 },
+      { id: 'master_175', name: 'Leyenda', icon: '👑', req: 175 },
+      { id: 'streak_3', name: 'Constante', icon: '🔥', reqStreak: 3 },
+    ];
+
+    // Estado local
+    let state = {
+      score: 0,
+      streak: 1,
+      learned: new Set(),
+      currentVerb: null,
+      quizType: 'choice' // 'choice' o 'write'
+    };
+
+    function initApp() {
+      loadState();
+      updateStatsUI();
+      renderVerbsList();
+      renderBadges();
+      nextQuestion();
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem('verbs_app_state');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        state.score = parsed.score || 0;
+        state.streak = parsed.streak || 1;
+        state.learned = new Set(parsed.learned || []);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('verbs_app_state', JSON.stringify({
+        score: state.score,
+        streak: state.streak,
+        learned: Array.from(state.learned)
+      }));
+    }
+
+    function updateStatsUI() {
+      document.getElementById('score-count').innerText = state.score;
+      document.getElementById('streak-count').innerText = state.streak;
+      document.getElementById('learned-count').innerText = state.learned.size;
+    }
+
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      el.classList.add('active');
+    }
+
+    function renderVerbsList() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const listEl = document.getElementById('verb-list');
+      listEl.innerHTML = '';
+
+      const filtered = verbsData.filter(v => 
+        v.inf.toLowerCase().includes(query) || 
+        v.past.toLowerCase().includes(query) || 
+        v.part.toLowerCase().includes(query) || 
+        v.esp.toLowerCase().includes(query)
+      );
+
+      filtered.forEach(v => {
+        const isLearned = state.learned.has(v.inf);
+        const li = document.createElement('li');
+        li.className = 'verb-item';
+        li.innerHTML = `
+          <div>
+            <div class="forms">${v.inf} - <span style="color:var(--primary);">${v.past}</span> - ${v.part}</div>
+            <div class="meaning">${v.esp}</div>
+          </div>
+          <div>${isLearned ? '✅' : '⚪'}</div>
+        `;
+        listEl.appendChild(li);
+      });
+    }
+
+    function nextQuestion() {
+      const randomIndex = Math.floor(Math.random() * verbsData.length);
+      state.currentVerb = verbsData[randomIndex];
+      state.quizType = Math.random() > 0.5 ? 'choice' : 'write';
+
+      const promptEl = document.getElementById('quiz-prompt');
+      const targetEl = document.getElementById('verb-target');
+      const optionsContainer = document.getElementById('quiz-options-container');
+
+      promptEl.innerText = `Significado: "${state.currentVerb.esp}"`;
+      targetEl.innerText = state.currentVerb.inf.toUpperCase();
+
+      optionsContainer.innerHTML = '';
+
+      if (state.quizType === 'choice') {
+        const correctForm = `${state.currentVerb.past} / ${state.currentVerb.part}`;
+        const options = [correctForm];
+
+        while (options.length < 4) {
+          const rand = verbsData[Math.floor(Math.random() * verbsData.length)];
+          const wrongOption = `${rand.past} / ${rand.part}`;
+          if (!options.includes(wrongOption)) {
+            options.push(wrongOption);
+          }
+        }
+
+        options.sort(() => Math.random() - 0.5);
+
+        const grid = document.createElement('div');
+        grid.className = 'options-grid';
+
+        options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'btn';
+          btn.innerText = opt;
+          btn.onclick = () => checkChoiceAnswer(opt, correctForm, btn);
+          grid.appendChild(btn);
+        });
+
+        optionsContainer.appendChild(grid);
+      } else {
+        optionsContainer.innerHTML = `
+          <input type="text" id="input-past" class="text-input" placeholder="Pasado simple (ej: ${state.currentVerb.past[0]}...)" autocomplete="off">
+          <input type="text" id="input-part" class="text-input" placeholder="Participio pasado" autocomplete="off">
+          <button class="btn btn-submit" onclick="checkWriteAnswer()">Comprobar</button>
+        `;
+      }
+    }
+
+    function checkChoiceAnswer(selected, correct, btn) {
+      if (selected === correct) {
+        btn.classList.add('correct');
+        handleSuccess();
+      } else {
+        btn.classList.add('incorrect');
+      }
+      setTimeout(nextQuestion, 1200);
+    }
+
+    function checkWriteAnswer() {
+      const pastInput = document.getElementById('input-past').value.trim().toLowerCase();
+      const partInput = document.getElementById('input-part').value.trim().toLowerCase();
+
+      const isPastCorrect = state.currentVerb.past.toLowerCase().split('/').includes(pastInput);
+      const isPartCorrect = state.currentVerb.part.toLowerCase().split('/').includes(partInput);
+
+      if (isPastCorrect && isPartCorrect) {
+        handleSuccess();
+        setTimeout(nextQuestion, 1000);
+      } else {
+        alert(`¡Casi! La respuesta correcta era: Pasado: ${state.currentVerb.past} | Participio: ${state.currentVerb.part}`);
+        nextQuestion();
+      }
+    }
+
+    function handleSuccess() {
+      state.score += 10;
+      state.learned.add(state.currentVerb.inf);
+      saveState();
+      updateStatsUI();
+      renderVerbsList();
+      renderBadges();
+    }
+
+    function renderBadges() {
+      const grid = document.getElementById('badge-grid');
+      grid.innerHTML = '';
+
+      badges.forEach(b => {
+        let unlocked = false;
+        if (b.req && state.learned.size >= b.req) unlocked = true;
+        if (b.reqStreak && state.streak >= b.reqStreak) unlocked = true;
+
+        const div = document.createElement('div');
+        div.className = `badge-item ${unlocked ? 'unlocked' : ''}`;
+        div.innerHTML = `
+          <div class="badge-icon">${b.icon}</div>
+          <div class="badge-name">${b.name}</div>
+        `;
+        grid.appendChild(div);
+      });
+    }
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>
